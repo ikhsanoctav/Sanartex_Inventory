@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Filament\Resources\Products\Pages;
+
+use App\Filament\Resources\Products\ProductResource;
+use Filament\Actions\CreateAction;
+use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
+
+class ListProducts extends ListRecords
+{
+    protected static string $resource = ProductResource::class;
+
+    protected ?string $heading = 'Manajemen Produk';
+    protected ?string $subheading = 'Kelola daftar stok produk dan inventaris gudang Sanartex.';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+
+            Actions\CreateAction::make()
+                ->label('Tambah Produk')
+                ->icon('heroicon-o-plus'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\Products\Widgets\ProductStatsWidget::class,
+        ];
+    }
+}
