@@ -12,8 +12,12 @@ class StockInTransaction extends Model
 
     protected $fillable = [
         'product_id',
+        'user_id',
         'tanggal',
         'jumlah',
+        'no_surat_jalan',
+        'supplier',
+        'no_batch_lot',
         'keterangan',
     ];
 
@@ -22,19 +26,30 @@ class StockInTransaction extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected static function booted()
     {
         static::created(function ($transaction) {
             $product = $transaction->product;
-            $product->stok_aktual += $transaction->jumlah;
-            $product->save();
+            if ($product) {
+                $product->stok_aktual += $transaction->jumlah;
+                $product->save();
+            }
         });
 
         static::deleted(function ($transaction) {
             $product = $transaction->product;
-            $product->stok_aktual -= $transaction->jumlah;
-            if($product->stok_aktual < 0) $product->stok_aktual = 0;
-            $product->save();
+            if ($product) {
+                $product->stok_aktual -= $transaction->jumlah;
+                if ($product->stok_aktual < 0) {
+                    $product->stok_aktual = 0;
+                }
+                $product->save();
+            }
         });
     }
 }
