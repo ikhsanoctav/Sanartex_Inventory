@@ -59,15 +59,15 @@
             window.dispatchEvent(new CustomEvent('toast', { detail: { message, type, title } }));
         };
     "
-    class="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col-reverse gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0"
+    class="fixed top-24 right-4 sm:right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0"
 >
     <template x-for="toast in toasts" :key="toast.id">
         <div 
             @mouseenter="pauseToast(toast)"
             @mouseleave="resumeToast(toast)"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:enter-start="opacity-0 -translate-y-2 sm:-translate-y-0 sm:translate-x-4 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0 scale-100"
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
