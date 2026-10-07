@@ -62,9 +62,13 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-## ✨ Fitur-Fitur Unggulan
+## ✨ Fitur-Fitur Unggulan & Tangkapan Layar
 
 ### 1. 🏢 Dashboard Intelijen Bisnis C-Level (*Top-Tier Management*)
+<p align="center">
+  <img src="docs/screenshots/dashboard_manajemen.png" alt="Dashboard Intelijen Bisnis C-Level" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+</p>
+
 - **Valuasi Aset Persediaan Fisik (Rp):** Menghitung total nilai rupiah seluruh pakaian jadi yang tersimpan di gudang secara real-time.
 - **Analisis Modal Kerja (*Working Capital Analytics*):**
   - *Kebutuhan Modal Reorder:* Estimasi dana kas yang wajib dialokasikan untuk memulihkan stok zona kritis.
@@ -74,16 +78,13 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
   - *Category Valuation Donut Chart:* Proporsi distribusi nilai aset per kategori produk pakaian jadi.
 - **Evaluasi Kinerja Vendor:** Peringkat 5 supplier konveksi utama berdasarkan jumlah SKU, lead time (hari), dan total volume suplai.
 
-### 2. 🧾 Modul Nota Pembelian & Faktur Pengadaan (*Purchasing & Finance*)
-- Pencatatan transaksi belanja pakaian jadi terintegrasi harga beli per satuan, diskon potongan vendor, PPN (%), dan status pembayaran (**LUNAS / TEMPO / DP**).
-- **Pelacakan Jatuh Tempo:** Pengingat otomatis untuk tagihan tempo yang mendekati batas waktu pelunasan.
-- **Cetak Faktur Nota Standar Korporat A4:**
-  - Kop surat resmi PT SANARTEX INDONESIA dengan alamat pabrik, NPWP, dan kontak.
-  - Ejaan huruf nominal otomatis (*Terbilang Rupiah*).
-  - 4 Kolom tanda tangan otorisasi (Purchasing, Checker QC, Vendor, Kepala Gudang).
-  - Optimasi cetak presisi 1 halaman A4 (`@media print`).
+---
 
-### 3. 👕 Master Data Pakaian Jadi & Visual Buffer Gauge RBL
+### 2. 👕 Master Data Pakaian Jadi & Visual Buffer Gauge RBL
+<p align="center">
+  <img src="docs/screenshots/master_katalog_apparel.png" alt="Master Data Pakaian Jadi & Visual Buffer Gauge RBL" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+</p>
+
 - **Katalog Terpadu Finished Goods:** Pengelolaan master data SKU produk apparel (Hoodie, Kaos, Kemeja, Jaket, Celana, Polo) lengkap dengan spesifikasi material teknis (ketebalan GSM, komposisi kain, tipe sablon/zipper), harga beli standar, dan vendor utama.
 - **Visual 3-Zone Buffer Gauge Bar:**
   - Setiap baris katalog dilengkapi visual bar spektrum 3 warna yang merefleksikan posisi stok terhadap ambang batas:
@@ -94,18 +95,49 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 - **Manajemen Lokasi Rak Fisik (*Warehouse Rack Allocation*):** Pemetaan lokasi rak spesifik untuk setiap SKU (misal: `Rak A-01 (Hoodie)`, `Rak B-01 (Kaos)`, `Rak F-02 (Cargo)`) guna mempercepat proses *putaway* barang masuk konveksi dan *picking* pesanan distribusi.
 - **Full CRUD & Otorisasi Ketat:** Kepala Gudang dan Superadmin dapat menambah, mengubah parameter buffer/lead time, serta menghapus SKU dengan validasi integritas relasi mutasi.
 
-### 4. 🛡️ Analisis Buffer RBL & Rekomendasi Reorder Cepat
+---
+
+### 3. 🧾 Modul Nota Pembelian & Faktur Pengadaan (*Purchasing & Finance*)
+<p align="center">
+  <img src="docs/screenshots/faktur_nota_pembelian.png" alt="Cetak Faktur Bukti Nota Pembelian A4" width="70%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: block; margin: 0 auto;">
+</p>
+
+- Pencatatan transaksi belanja pakaian jadi terintegrasi harga beli per satuan, diskon potongan vendor, PPN (%), dan status pembayaran (**LUNAS / TEMPO / DP**).
+- **Pelacakan Jatuh Tempo:** Pengingat otomatis untuk tagihan tempo yang mendekati batas waktu pelunasan.
+- **Cetak Faktur Nota Standar Korporat A4:**
+  - Kop surat resmi PT SANARTEX INDONESIA dengan alamat pabrik, NPWP, dan kontak.
+  - Ejaan huruf nominal otomatis (*Terbilang Rupiah*).
+  - 4 Kolom tanda tangan otorisasi (Purchasing, Checker QC, Vendor, Kepala Gudang).
+  - Optimasi cetak presisi 1 halaman A4 (`@media print`).
+
+---
+
+### 4. 📦 Workspace Operasional Admin Gudang (Inbound & Outbound)
+<p align="center">
+  <img src="docs/screenshots/dashboard_admin_gudang.png" alt="Dashboard Workspace Admin Gudang" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+</p>
+
+- Pencatatan cepat arus barang masuk dari konveksi (+IN) dan pengeluaran pesanan cabang/marketplace (-OUT).
+- Pemantauan kapasitas rak fisik real-time serta scanner kamera barcode SKU.
+
+---
+
+### 5. 🛡️ Analisis Buffer RBL & Rekomendasi Reorder Cepat
 - Pemetaan otomatis stok ke 3 zona keputusan (Kritis, Normal, Berlebih).
 - Perhitungan kuantitas saran order optimal $(\text{Max Buffer} - \text{Stok})$ dan estimasi total anggaran PO.
 - Konversi instan dari analisis rekomendasi reorder ke pencatatan transaksi masuk.
 
-### 5. ⚡ Universal Realtime AJAX Table & Filter Engine
+---
+
+### 6. ⚡ Universal Realtime AJAX Table & Filter Engine
 - **Debounced Live Search:** Pencarian instan real-time berdasarkan nama produk, SKU, spesifikasi bahan, vendor, nomor nota/surat jalan, atau lokasi rak fisik tanpa reload halaman.
 - **Multi-Criteria Filtering:** Filter instan kategori apparel, status zona RBL (*Kritis, Menipis, Normal, Berlebih*), rentang tanggal, status pembayaran nota, dan supplier.
 - **Multi-Option Sorting:** Pengurutan cepat berdasarkan Nama Produk (A-Z / Z-A), Stok Tertinggi/Terendah, dan Buffer Level Terendah.
 - **Paginasi Terpadu:** Paginator responsif Tailwind CSS yang mempertahankan parameter filter aktif secara mulus.
 
-### 6. 📷 Barcode Scanner Terintegrasi
+---
+
+### 7. 📷 Barcode Scanner Terintegrasi
 - Pemindaian barcode SKU / QR code hangtag pakaian jadi langsung melalui **kamera peramban (laptop/smartphone)** atau **unggah berkas gambar label**.
 
 ---
