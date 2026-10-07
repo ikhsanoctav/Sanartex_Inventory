@@ -80,7 +80,18 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-### 2. 👕 Master Data Pakaian Jadi & Visual Buffer Gauge RBL
+### 2. 👑 Dashboard Eksekutif & Manajemen Sistem (*Superadmin*)
+<p align="center">
+  <img src="docs/screenshots/dashboard_superadmin.png" alt="Dashboard Eksekutif Superadmin" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+</p>
+
+- **Kesehatan Buffer RBL Keseluruhan:** Indikator persentase kepatuhan stok pakaian jadi terhadap ambang batas buffer RBL (*Optimal Status Index*).
+- **Interactive 3-Zone RBL Summary Cards:** Ringkasan jumlah SKU pada *Zona Kritis, Zona Normal,* dan *Zona Berlebih* dengan fitur drill-down interaktif ke rincian produk.
+- **Statistik Cepat & Manajemen Pengguna:** Pemantauan jumlah user aktif, penerimaan barang bulanan, dan jalan pintas ke manajemen hak akses (*Role & Permissions*).
+
+---
+
+### 3. 👕 Master Data Pakaian Jadi & Visual Buffer Gauge RBL
 <p align="center">
   <img src="docs/screenshots/master_katalog_apparel.png" alt="Master Data Pakaian Jadi & Visual Buffer Gauge RBL" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
 </p>
@@ -97,7 +108,7 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-### 3. 🧾 Modul Nota Pembelian & Faktur Pengadaan (*Purchasing & Finance*)
+### 4. 🧾 Modul Nota Pembelian & Faktur Pengadaan (*Purchasing & Finance*)
 <p align="center">
   <img src="docs/screenshots/faktur_nota_pembelian.png" alt="Cetak Faktur Bukti Nota Pembelian A4" width="70%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: block; margin: 0 auto;">
 </p>
@@ -112,7 +123,7 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-### 4. 📦 Workspace Operasional Admin Gudang (Inbound & Outbound)
+### 5. 📦 Workspace Operasional Admin Gudang (Inbound & Outbound)
 <p align="center">
   <img src="docs/screenshots/dashboard_admin_gudang.png" alt="Dashboard Workspace Admin Gudang" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
 </p>
@@ -122,14 +133,14 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-### 5. 🛡️ Analisis Buffer RBL & Rekomendasi Reorder Cepat
+### 6. 🛡️ Analisis Buffer RBL & Rekomendasi Reorder Cepat
 - Pemetaan otomatis stok ke 3 zona keputusan (Kritis, Normal, Berlebih).
 - Perhitungan kuantitas saran order optimal $(\text{Max Buffer} - \text{Stok})$ dan estimasi total anggaran PO.
 - Konversi instan dari analisis rekomendasi reorder ke pencatatan transaksi masuk.
 
 ---
 
-### 6. ⚡ Universal Realtime AJAX Table & Filter Engine
+### 7. ⚡ Universal Realtime AJAX Table & Filter Engine
 - **Debounced Live Search:** Pencarian instan real-time berdasarkan nama produk, SKU, spesifikasi bahan, vendor, nomor nota/surat jalan, atau lokasi rak fisik tanpa reload halaman.
 - **Multi-Criteria Filtering:** Filter instan kategori apparel, status zona RBL (*Kritis, Menipis, Normal, Berlebih*), rentang tanggal, status pembayaran nota, dan supplier.
 - **Multi-Option Sorting:** Pengurutan cepat berdasarkan Nama Produk (A-Z / Z-A), Stok Tertinggi/Terendah, dan Buffer Level Terendah.
@@ -137,7 +148,7 @@ Sistem menerapkan prinsip *Segregation of Duties* yang ketat dengan 5 peran peng
 
 ---
 
-### 7. 📷 Barcode Scanner Terintegrasi
+### 8. 📷 Barcode Scanner Terintegrasi
 - Pemindaian barcode SKU / QR code hangtag pakaian jadi langsung melalui **kamera peramban (laptop/smartphone)** atau **unggah berkas gambar label**.
 
 ---
