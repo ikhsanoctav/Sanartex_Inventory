@@ -6,11 +6,16 @@ use App\Models\Product;
 use App\Models\StockInTransaction;
 use App\Models\StockOutTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
     {
+        if (Auth::user()->role === 'admin_gudang' && !Auth::user()->isSuperadmin()) {
+            return redirect()->route('dashboard')->with('error', 'Akses dibatasi. Laporan mutasi & valuasi persediaan hanya dapat diakses oleh Kepala Gudang, Purchasing, dan Superadmin.');
+        }
+
         $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
         $endDate   = $request->input('end_date', now()->format('Y-m-d'));
         $kategori  = $request->input('kategori', 'all');

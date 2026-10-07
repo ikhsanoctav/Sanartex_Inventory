@@ -7,8 +7,20 @@
     
     <!-- Left Section: Mobile Menu Toggle & Search -->
     <div class="flex items-center gap-4">
-        <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 lg:hidden transition-colors">
+        <!-- Mobile Menu Toggle Button -->
+        <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 lg:hidden transition-colors" title="Menu Mobile">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+
+        <!-- Desktop Sidebar Collapse Toggle Button -->
+        <button @click="toggleCollapse()" 
+                class="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-slate-100 hover:border-slate-300 text-slate-600 hover:text-navy-900 transition-all shadow-2xs group focus:outline-none focus:ring-2 focus:ring-orange-500/20" 
+                :title="sidebarCollapsed ? 'Perluas Sidebar (Ctrl+B)' : 'Ciutkan Sidebar (Ctrl+B)'">
+            <svg class="w-4 h-4 transition-transform duration-300 text-slate-500 group-hover:text-orange-500" :class="sidebarCollapsed ? 'rotate-180 text-orange-500' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+            <span class="text-xs font-semibold text-slate-600 group-hover:text-navy-900 transition-colors" x-text="sidebarCollapsed ? 'Perluas Menu' : 'Ciutkan Menu'"></span>
+            <kbd class="text-[9px] px-1.5 py-0.5 rounded bg-white text-slate-400 font-mono border border-slate-200 group-hover:text-slate-600 group-hover:border-slate-300 shadow-3xs">Ctrl+B</kbd>
         </button>
 
         <!-- Quick Search Bar with Barcode Scanner -->

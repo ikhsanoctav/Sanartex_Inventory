@@ -37,6 +37,35 @@
         this.dropdownOpen = false;
         this.searchQuery = '';
     },
+    get projectedRemaining() {
+        return (parseInt(this.currentStock) || 0) - (parseInt(this.outQty) || 0);
+    },
+    get projectedStatus() {
+        if (!this.selectedProduct) return null;
+        const rem = this.projectedRemaining;
+        const min = parseInt(this.min) || 0;
+        const max = parseInt(this.max) || 0;
+
+        if (rem <= min) {
+            return {
+                status: 'KRITIS',
+                label: '🔴 Zona Kritis (Stok <= ' + min + ' ' + this.unit + ')',
+                colorClass: 'text-rose-600'
+            };
+        } else if (max > 0 && rem > max) {
+            return {
+                status: 'BERLEBIH',
+                label: '🔵 Zona Berlebih (Overstock > ' + max + ' ' + this.unit + ')',
+                colorClass: 'text-blue-600'
+            };
+        } else {
+            return {
+                status: 'NORMAL',
+                label: '🟢 Zona Normal (Aman)',
+                colorClass: 'text-emerald-600'
+            };
+        }
+    },
     scanProductBarcode() {
         window.triggerBarcodeScan({
             title: 'Scan Barcode / QR Label Produk Apparel (SKU)',
@@ -188,7 +217,7 @@
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @forelse($transactions as $t)
                         <tr class="hover:bg-slate-50/75 transition-colors">
-                            <td class="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">{{ $t->tanggal }}</td>
+                            <td class="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">{{ \Carbon\Carbon::parse($t->tanggal)->translatedFormat('d M Y') }}</td>
                             <td class="py-3 px-4">
                                 <span class="text-[11px] font-mono text-slate-400 font-semibold">[{{ $t->product->kode_produk ?? 'AP' }}]</span>
                                 <div class="font-semibold text-slate-900">{{ $t->product->nama ?? 'Produk Dihapus' }}</div>
@@ -399,8 +428,8 @@
                         <div>
                             <span class="text-slate-700 font-medium block">Sisa Proyeksi:</span>
                             <span class="font-bold" 
-                                  :class="(currentStock - (outQty || 0)) < 0 ? 'text-rose-600' : 'text-slate-900'"
-                                  x-text="(currentStock - (outQty || 0)) + ' ' + unit"></span>
+                                  :class="projectedRemaining < 0 ? 'text-rose-600' : 'text-slate-900'"
+                                  x-text="projectedRemaining + ' ' + unit"></span>
                         </div>
                     </div>
 
@@ -413,8 +442,8 @@
                     <div x-show="outQty <= currentStock && selectedProduct" class="pt-2 border-t border-slate-200 text-[11px]">
                         <span class="text-slate-500">Status Buffer Setelah Keluar: </span>
                         <span class="font-bold"
-                              :class="(currentStock - outQty) <= min ? 'text-rose-600' : 'text-emerald-600'"
-                              x-text="(currentStock - outQty) <= min ? '🔴 Zona Kritis (Stok <= Safety Stock ' + min + ' ' + unit + ')' : '🟢 Zona Normal (Aman)'">
+                              :class="projectedStatus ? projectedStatus.colorClass : 'text-slate-600'"
+                              x-text="projectedStatus ? projectedStatus.label : 'Pilih produk dahulu'">
                         </span>
                     </div>
                 </div>

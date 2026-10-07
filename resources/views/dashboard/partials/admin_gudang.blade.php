@@ -177,7 +177,7 @@
                         </div>
                         <div class="text-right flex-shrink-0">
                             <span class="font-black text-emerald-600 text-sm block">+{{ $in->jumlah }} {{ $in->product->satuan ?? 'Pcs' }}</span>
-                            <span class="text-[10px] text-slate-400">{{ $in->tanggal }}</span>
+                            <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($in->tanggal)->translatedFormat('d M Y') }}</span>
                         </div>
                     </div>
                 @empty
@@ -214,7 +214,7 @@
                         </div>
                         <div class="text-right flex-shrink-0">
                             <span class="font-black text-orange-600 text-sm block">-{{ $out->jumlah }} {{ $out->product->satuan ?? 'Pcs' }}</span>
-                            <span class="text-[10px] text-slate-400">{{ $out->tanggal }}</span>
+                            <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($out->tanggal)->translatedFormat('d M Y') }}</span>
                         </div>
                     </div>
                 @empty

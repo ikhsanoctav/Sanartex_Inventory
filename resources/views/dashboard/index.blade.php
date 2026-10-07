@@ -26,7 +26,9 @@
             </h1>
             
             <p class="text-xs text-slate-500 mt-1">
-                @if($user->role === 'purchasing')
+                @if($user->role === 'manajemen')
+                    Dashboard Intelijen Bisnis C-Level: Monitoring posisi likuiditas persediaan, valuasi aset pakaian jadi, dan evaluasi pengadaan strategis.
+                @elseif($user->role === 'purchasing')
                     Pusat pemantauan reorder barang jadi apparel, purchase order pengadaan, koordinasi vendor konveksi, dan buffer level RBL.
                 @elseif($user->role === 'admin_gudang')
                     Pusat operasional pencatatan cepat barang masuk konveksi (+IN), pengeluaran pesanan outlet/marketplace (-OUT), dan lokasi rak fisik.
@@ -40,10 +42,23 @@
 
         <!-- Role-Specific Action Buttons -->
         <div class="flex flex-wrap items-center gap-2">
-            @if($user->role === 'purchasing')
+            @if($user->role === 'manajemen')
+                <a href="{{ route('laporan.index') }}" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Laporan Valuasi</span>
+                </a>
+                <a href="{{ route('purchasing.nota.index') }}" class="px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Nota Pembelian</span>
+                </a>
+                <a href="{{ route('rbl.analisis') }}" class="px-3.5 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-950 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs">
+                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    <span>Matriks RBL</span>
+                </a>
+            @elseif($user->role === 'purchasing')
                 <a href="{{ route('transaksi.masuk') }}" class="px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>+ Proses PO Masuk</span>
+                    <span>Proses PO Masuk</span>
                 </a>
                 <a href="{{ route('rbl.analisis') }}" class="px-3.5 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-950 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs">
                     <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -52,11 +67,11 @@
             @elseif($user->role === 'admin_gudang')
                 <a href="{{ route('transaksi.masuk') }}" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>+ Catat Stok Masuk</span>
+                    <span>Catat Stok Masuk</span>
                 </a>
                 <a href="{{ route('transaksi.keluar') }}" class="px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
-                    <span>- Catat Stok Keluar</span>
+                    <span>Catat Stok Keluar</span>
                 </a>
                 <button 
                     type="button" 
@@ -78,11 +93,11 @@
                 <!-- Superadmin default buttons -->
                 <a href="{{ route('transaksi.masuk') }}" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>+ Masuk</span>
+                    <span>Masuk</span>
                 </a>
                 <a href="{{ route('transaksi.keluar') }}" class="px-3 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
-                    <span>- Keluar</span>
+                    <span>Keluar</span>
                 </a>
                 <a href="{{ route('rbl.analisis') }}" class="px-3 py-2 rounded-xl bg-navy-900 hover:bg-navy-950 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs">
                     <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -93,7 +108,9 @@
     </div>
 
     <!-- 2. Role Workspace Content -->
-    @if($user->role === 'purchasing')
+    @if($user->role === 'manajemen')
+        @include('dashboard.partials.manajemen')
+    @elseif($user->role === 'purchasing')
         @include('dashboard.partials.purchasing')
     @elseif($user->role === 'admin_gudang')
         @include('dashboard.partials.admin_gudang')

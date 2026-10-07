@@ -10,6 +10,19 @@
     kategoriFilter: 'all',
     reordersList: {{ Js::from($reorders->values()) }},
     allProductsList: {{ Js::from($allProducts->values()) }},
+    
+    // Pagination State
+    reorderPage: 1,
+    allPage: 1,
+    perPage: 10,
+
+    init() {
+        this.$watch('searchQuery', () => { this.reorderPage = 1; this.allPage = 1; });
+        this.$watch('statusFilter', () => { this.reorderPage = 1; this.allPage = 1; });
+        this.$watch('kategoriFilter', () => { this.reorderPage = 1; this.allPage = 1; });
+        this.$watch('perPage', () => { this.reorderPage = 1; this.allPage = 1; });
+    },
+
     get filteredReorders() {
         return this.reordersList.filter(item => {
             const p = item.product;
@@ -23,6 +36,16 @@
             return matchesSearch && matchesKategori;
         });
     },
+
+    get paginatedReorders() {
+        const start = (this.reorderPage - 1) * this.perPage;
+        return this.filteredReorders.slice(start, start + this.perPage);
+    },
+
+    get totalReorderPages() {
+        return Math.max(1, Math.ceil(this.filteredReorders.length / this.perPage));
+    },
+
     get filteredAllProducts() {
         return this.allProductsList.filter(p => {
             const matchesSearch = !this.searchQuery.trim() || 
@@ -36,13 +59,26 @@
             return matchesSearch && matchesStatus && matchesKategori;
         });
     },
+
+    get paginatedAllProducts() {
+        const start = (this.allPage - 1) * this.perPage;
+        return this.filteredAllProducts.slice(start, start + this.perPage);
+    },
+
+    get totalAllPages() {
+        return Math.max(1, Math.ceil(this.filteredAllProducts.length / this.perPage));
+    },
+
     get filteredTotalCost() {
         return this.filteredReorders.reduce((sum, item) => sum + (item.estimated_cost || 0), 0);
     },
+
     resetFilters() {
         this.searchQuery = '';
         this.statusFilter = 'all';
         this.kategoriFilter = 'all';
+        this.reorderPage = 1;
+        this.allPage = 1;
     }
 }">
 
@@ -180,9 +216,11 @@
                 </button>
             </div>
 
-            <div class="text-right">
-                <span class="text-xs text-slate-500">Estimasi Total Biaya PO: </span>
-                <span class="text-sm font-bold text-slate-900" x-text="'Rp ' + filteredTotalCost.toLocaleString('id-ID')"></span>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <span class="text-xs text-slate-500">Estimasi Total Biaya PO: </span>
+                    <span class="text-sm font-bold text-slate-900" x-text="'Rp ' + filteredTotalCost.toLocaleString('id-ID')"></span>
+                </div>
             </div>
         </div>
 
@@ -203,7 +241,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
-                        <template x-for="r in filteredReorders" :key="r.product.id">
+                        <template x-for="r in paginatedReorders" :key="r.product.id">
                             <tr class="hover:bg-slate-50/75 transition-colors">
                                 <td class="py-3.5 px-4">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800" x-text="r.priority"></span>
@@ -229,6 +267,36 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Client-Side Pagination for Tab 1 -->
+            <div x-show="filteredReorders.length > perPage" class="p-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div class="text-slate-500">
+                    Menampilkan <span class="font-bold text-slate-800" x-text="(reorderPage - 1) * perPage + 1"></span> sampai <span class="font-bold text-slate-800" x-text="Math.min(reorderPage * perPage, filteredReorders.length)"></span> dari <span class="font-bold text-slate-800" x-text="filteredReorders.length"></span> rekomendasi PO
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button 
+                        type="button"
+                        :disabled="reorderPage === 1"
+                        @click="reorderPage--"
+                        :class="reorderPage === 1 ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400' : 'bg-white hover:bg-slate-100 text-slate-700'"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 font-medium transition-colors">
+                        &larr; Prev
+                    </button>
+                    
+                    <span class="px-3 py-1.5 text-xs text-slate-600 font-semibold">
+                        Hal <span x-text="reorderPage"></span> / <span x-text="totalReorderPages"></span>
+                    </span>
+
+                    <button 
+                        type="button"
+                        :disabled="reorderPage === totalReorderPages"
+                        @click="reorderPage++"
+                        :class="reorderPage === totalReorderPages ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400' : 'bg-white hover:bg-slate-100 text-slate-700'"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 font-medium transition-colors">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- TAB 2: ALL BUFFER STATUS TABLE -->
@@ -246,7 +314,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
-                        <template x-for="p in filteredAllProducts" :key="p.id">
+                        <template x-for="p in paginatedAllProducts" :key="p.id">
                             <tr class="hover:bg-slate-50/75 transition-colors">
                                 <td class="py-3 px-4">
                                     <span class="text-[11px] font-mono text-slate-400 font-semibold" x-text="'[' + p.kode_produk + ']'"></span>
@@ -276,6 +344,36 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Client-Side Pagination for Tab 2 -->
+            <div x-show="filteredAllProducts.length > perPage" class="p-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div class="text-slate-500">
+                    Menampilkan <span class="font-bold text-slate-800" x-text="(allPage - 1) * perPage + 1"></span> sampai <span class="font-bold text-slate-800" x-text="Math.min(allPage * perPage, filteredAllProducts.length)"></span> dari <span class="font-bold text-slate-800" x-text="filteredAllProducts.length"></span> SKU
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button 
+                        type="button"
+                        :disabled="allPage === 1"
+                        @click="allPage--"
+                        :class="allPage === 1 ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400' : 'bg-white hover:bg-slate-100 text-slate-700'"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 font-medium transition-colors">
+                        &larr; Prev
+                    </button>
+                    
+                    <span class="px-3 py-1.5 text-xs text-slate-600 font-semibold">
+                        Hal <span x-text="allPage"></span> / <span x-text="totalAllPages"></span>
+                    </span>
+
+                    <button 
+                        type="button"
+                        :disabled="allPage === totalAllPages"
+                        @click="allPage++"
+                        :class="allPage === totalAllPages ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400' : 'bg-white hover:bg-slate-100 text-slate-700'"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 font-medium transition-colors">
+                        Next &rarr;
+                    </button>
+                </div>
             </div>
         </div>
 

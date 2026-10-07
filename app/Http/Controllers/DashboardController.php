@@ -181,6 +181,16 @@ class DashboardController extends Controller
         // 13. Total Pengguna Sistem
         $totalUsers = User::count();
 
+        // 14. Ringkasan Finansial Multi-Periode (Khusus Purchasing: Harian, Mingguan, Bulanan, Tahunan)
+        $purchasingFinancials = $this->getPurchasingFinancialSummary();
+
+        // 15. Nota Pembelian & Faktur Pengadaan Terkini (Khusus Purchasing)
+        $recentPurchaseNotes = StockInTransaction::with(['product', 'user'])
+            ->latest('tanggal')
+            ->latest('id')
+            ->take(6)
+            ->get();
+
         return view('dashboard.index', compact(
             'user',
             'allProducts',
@@ -227,7 +237,9 @@ class DashboardController extends Controller
             'todayOutboundCount',
             'todayOutboundQty',
             'attentionProducts',
-            'totalUsers'
+            'totalUsers',
+            'purchasingFinancials',
+            'recentPurchaseNotes'
         ));
     }
 
@@ -362,6 +374,123 @@ class DashboardController extends Controller
                 'total_out' => array_sum($bulananOut),
                 'net' => array_sum($bulananIn) - array_sum($bulananOut),
             ],
+        ];
+    }
+
+    /**
+     * Hitung ringkasan finansial dan perputaran barang untuk tim Purchasing
+     * Mencakup periode: Harian, Mingguan, Bulanan, dan Tahunan
+     */
+    private function getPurchasingFinancialSummary(): array
+    {
+        $todayStr = now()->format('Y-m-d');
+        
+        $startOfWeek = now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = now()->endOfWeek()->format('Y-m-d');
+        
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth = now()->endOfMonth()->format('Y-m-d');
+        
+        $startOfYear = now()->startOfYear()->format('Y-m-d');
+        $endOfYear = now()->endOfYear()->format('Y-m-d');
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        return [
+            'harian' => array_merge(
+                $this->getFinancialMetricForRange($todayStr, $todayStr),
+                [
+                    'key' => 'harian',
+                    'title' => 'Hari Ini',
+                    'period_label' => now()->format('d') . ' ' . $monthNames[now()->month] . ' ' . now()->format('Y'),
+                    'badge' => '24 Jam Terakhir',
+                    'icon' => 'calendar-day',
+                ]
+            ),
+            'mingguan' => array_merge(
+                $this->getFinancialMetricForRange($startOfWeek, $endOfWeek),
+                [
+                    'key' => 'mingguan',
+                    'title' => 'Minggu Ini',
+                    'period_label' => now()->startOfWeek()->format('d M') . ' - ' . now()->endOfWeek()->format('d M Y'),
+                    'badge' => '7 Hari Berjalan',
+                    'icon' => 'calendar-week',
+                ]
+            ),
+            'bulanan' => array_merge(
+                $this->getFinancialMetricForRange($startOfMonth, $endOfMonth),
+                [
+                    'key' => 'bulanan',
+                    'title' => 'Bulan Ini',
+                    'period_label' => $monthNames[now()->month] . ' ' . now()->format('Y'),
+                    'badge' => 'Bulan Berjalan',
+                    'icon' => 'calendar-alt',
+                ]
+            ),
+            'tahunan' => array_merge(
+                $this->getFinancialMetricForRange($startOfYear, $endOfYear),
+                [
+                    'key' => 'tahunan',
+                    'title' => 'Tahun Ini',
+                    'period_label' => 'Tahun Anggaran ' . now()->format('Y'),
+                    'badge' => 'Tahun Berjalan',
+                    'icon' => 'chart-line',
+                ]
+            ),
+        ];
+    }
+
+    /**
+     * Hitung nominal belanja masuk (Inbound) dan pendapatan distribusi keluar (Outbound)
+     * berdasarkan range tanggal
+     */
+    private function getFinancialMetricForRange(string $startDate, string $endDate): array
+    {
+        $inbound = StockInTransaction::join('products', 'stock_in_transactions.product_id', '=', 'products.id')
+            ->whereBetween('stock_in_transactions.tanggal', [$startDate, $endDate])
+            ->selectRaw('
+                COALESCE(SUM(stock_in_transactions.jumlah * COALESCE(products.harga_beli_per_satuan, 0)), 0) as total_nominal,
+                COALESCE(SUM(stock_in_transactions.jumlah), 0) as total_qty,
+                COUNT(stock_in_transactions.id) as total_count
+            ')
+            ->first();
+
+        $outbound = StockOutTransaction::join('products', 'stock_out_transactions.product_id', '=', 'products.id')
+            ->whereBetween('stock_out_transactions.tanggal', [$startDate, $endDate])
+            ->selectRaw('
+                COALESCE(SUM(stock_out_transactions.jumlah * COALESCE(products.harga_beli_per_satuan, 0)), 0) as total_nominal,
+                COALESCE(SUM(stock_out_transactions.jumlah), 0) as total_qty,
+                COUNT(stock_out_transactions.id) as total_count
+            ')
+            ->first();
+
+        $inNominal = (float) ($inbound->total_nominal ?? 0);
+        $inQty = (int) ($inbound->total_qty ?? 0);
+        $inCount = (int) ($inbound->total_count ?? 0);
+
+        $outNominal = (float) ($outbound->total_nominal ?? 0);
+        $outQty = (int) ($outbound->total_qty ?? 0);
+        $outCount = (int) ($outbound->total_count ?? 0);
+
+        $avgInbound = $inCount > 0 ? round($inNominal / $inCount) : 0;
+        $avgOutbound = $outCount > 0 ? round($outNominal / $outCount) : 0;
+
+        return [
+            'inbound_nominal' => $inNominal,
+            'inbound_qty' => $inQty,
+            'inbound_count' => $inCount,
+            'avg_inbound' => $avgInbound,
+            'outbound_nominal' => $outNominal,
+            'outbound_qty' => $outQty,
+            'outbound_count' => $outCount,
+            'avg_outbound' => $avgOutbound,
+            'total_perputaran' => $inNominal + $outNominal,
+            'net_pengadaan' => $inNominal,
+            'net_pendapatan' => $outNominal,
+            'selisih' => $outNominal - $inNominal,
         ];
     }
 

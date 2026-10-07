@@ -38,6 +38,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/keluar', [TransactionController::class, 'indexKeluar'])->name('transaksi.keluar');
     Route::post('/transaksi/keluar', [TransactionController::class, 'storeKeluar'])->name('transaksi.keluar.store');
 
+    // Modul Finansial & Nota Pembelian (Purchasing & Procurement)
+    Route::get('/purchasing/nota', [TransactionController::class, 'indexNota'])->name('purchasing.nota.index');
+    Route::get('/purchasing/nota/{id}/cetak', [TransactionController::class, 'cetakNota'])->name('purchasing.nota.cetak');
+    Route::put('/purchasing/nota/{id}/status', [TransactionController::class, 'updateStatusBayar'])->name('purchasing.nota.updateStatus');
+
     // Analisis Buffer RBL & Rekomendasi Reorder
     Route::get('/rbl/analisis', [RblAnalysisController::class, 'index'])->name('rbl.analisis');
 

@@ -39,9 +39,14 @@ class User extends Authenticatable
         return in_array($this->role, ['superadmin', 'owner', 'admin']);
     }
 
+    public function isManajemen(): bool
+    {
+        return in_array($this->role, ['manajemen', 'direksi', 'owner', 'general_manager', 'superadmin']);
+    }
+
     public function isKepalaGudang(): bool
     {
-        return in_array($this->role, ['kepala_gudang', 'inventory_manager', 'superadmin']);
+        return in_array($this->role, ['kepala_gudang', 'inventory_manager', 'manajemen', 'superadmin']);
     }
 
     public function isAdminGudang(): bool
@@ -51,13 +56,14 @@ class User extends Authenticatable
 
     public function isPurchasing(): bool
     {
-        return in_array($this->role, ['purchasing', 'procurement', 'superadmin']);
+        return in_array($this->role, ['purchasing', 'procurement', 'manajemen', 'superadmin']);
     }
 
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
             'superadmin' => 'Superadmin',
+            'manajemen', 'direksi', 'owner', 'general_manager' => 'Direksi / Manajemen Eksekutif',
             'kepala_gudang' => 'Kepala Gudang',
             'admin_gudang' => 'Admin Gudang',
             'purchasing' => 'Purchasing / Procurement',
@@ -69,6 +75,7 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'superadmin' => 'bg-purple-50 text-purple-700 border border-purple-200',
+            'manajemen', 'direksi', 'owner', 'general_manager' => 'bg-indigo-50 text-indigo-700 border border-indigo-300 font-bold',
             'kepala_gudang' => 'bg-sky-50 text-sky-700 border border-sky-200',
             'admin_gudang' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
             'purchasing', 'procurement' => 'bg-amber-50 text-amber-800 border border-amber-200',

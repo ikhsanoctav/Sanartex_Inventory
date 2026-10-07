@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Services\RblEvaluatorService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RblAnalysisController extends Controller
 {
     public function index(Request $request)
     {
+        if (Auth::user()->role === 'admin_gudang' && !Auth::user()->isSuperadmin()) {
+            return redirect()->route('dashboard')->with('error', 'Akses dibatasi. Modul Analisis Buffer RBL diperuntukkan bagi Kepala Gudang, Purchasing, dan Superadmin.');
+        }
+
         $allProducts = Product::orderBy('status_stok', 'asc')->orderBy('nama', 'asc')->get();
 
         $kritis = $allProducts->where('status_stok', 'KRITIS');

@@ -46,7 +46,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|in:superadmin,kepala_gudang,admin_gudang,purchasing',
+            'role' => 'required|string|in:superadmin,manajemen,kepala_gudang,admin_gudang,purchasing',
             'phone' => 'nullable|string|max:20',
         ]);
 
@@ -70,7 +70,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
-            'role' => 'required|string|in:superadmin,kepala_gudang,admin_gudang,purchasing',
+            'role' => 'required|string|in:superadmin,manajemen,kepala_gudang,admin_gudang,purchasing',
             'phone' => 'nullable|string|max:20',
         ]);
 

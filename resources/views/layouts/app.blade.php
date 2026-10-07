@@ -69,7 +69,17 @@
 
     @stack('styles')
 </head>
-<body class="h-full bg-slate-50 text-slate-800 flex font-sans overflow-hidden" x-data="{ sidebarOpen: false }">
+<body class="h-full bg-slate-50 text-slate-800 flex font-sans overflow-hidden" 
+      x-data="{ 
+          sidebarOpen: false, 
+          sidebarCollapsed: localStorage.getItem('sanartex_sidebar_collapsed') === 'true',
+          toggleCollapse() {
+              this.sidebarCollapsed = !this.sidebarCollapsed;
+              localStorage.setItem('sanartex_sidebar_collapsed', this.sidebarCollapsed);
+          }
+      }"
+      @keydown.window.ctrl.b.prevent="toggleCollapse()"
+      @keydown.window.meta.b.prevent="toggleCollapse()">
 
     <div class="flex-1 flex overflow-hidden h-screen w-full">
         
@@ -95,41 +105,22 @@
             <!-- Modular Topbar -->
             @include('layouts.topbar')
 
-            <!-- Global Notifications -->
-            <div class="w-full px-4 sm:px-6 lg:px-8 pt-4">
-                @if (session('success'))
-                    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" 
-                         class="mb-4 flex items-center justify-between p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium shadow-sm">
-                        <div class="flex items-center gap-2.5">
-                            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                            <span>{{ session('success') }}</span>
-                        </div>
-                        <button @click="show = false" class="text-emerald-500 hover:text-emerald-700">&times;</button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div x-data="{ show: true }" x-show="show" 
-                         class="mb-4 flex items-center justify-between p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium shadow-sm">
-                        <div class="flex items-center gap-2.5">
-                            <svg class="w-4 h-4 text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                            <span>{{ session('error') }}</span>
-                        </div>
-                        <button @click="show = false" class="text-rose-500 hover:text-rose-700">&times;</button>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="mb-4 p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium shadow-sm">
-                        <p class="font-semibold mb-1">Periksa kembali data Anda:</p>
-                        <ul class="list-disc list-inside space-y-0.5 text-rose-700">
+            <!-- Global Validation Summary for Forms -->
+            @if ($errors->any())
+                <div class="w-full px-4 sm:px-6 lg:px-8 pt-4">
+                    <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium shadow-sm">
+                        <p class="font-bold mb-1 flex items-center gap-2 text-rose-900">
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <span>Periksa kembali input data Anda:</span>
+                        </p>
+                        <ul class="list-disc list-inside space-y-0.5 text-rose-700 ml-1">
                             @foreach ($errors->all() as $err)
                                 <li>{{ $err }}</li>
                             @endforeach
                         </ul>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
 
             <!-- Page Content (Full Width Edge-to-Edge with Standard Padding) -->
             <main class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6">
@@ -155,6 +146,9 @@
 
     <!-- Universal Realtime AJAX Table & Filter Engine -->
     @include('layouts.ajax-filter')
+
+    <!-- Universal Floating Toast Notifications Engine -->
+    @include('layouts.toast')
 
     @stack('scripts')
 </body>

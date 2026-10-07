@@ -3,7 +3,40 @@
 @section('title', 'Master Produk & Parameter RBL')
 
 @section('content')
-<div class="space-y-6" x-data="{ openCreateModal: false, editProduct: null }">
+<div class="space-y-6" x-data="{ 
+    openCreateModal: false, 
+    editProduct: null,
+    createForm: {
+        stok_aktual: 0,
+        batas_minimum: 20,
+        batas_maksimum: 100,
+        satuan: 'Pcs'
+    },
+    evaluateStatus(stok, min, max) {
+        const s = parseInt(stok) || 0;
+        const m = parseInt(min) || 0;
+        const mx = parseInt(max) || 0;
+        if (s <= m) {
+            return {
+                status: 'KRITIS',
+                label: '🔴 Zona Kritis (Stok <= ' + m + ')',
+                colorClass: 'text-rose-600'
+            };
+        } else if (mx > 0 && s > mx) {
+            return {
+                status: 'BERLEBIH',
+                label: '🔵 Zona Berlebih (Overstock > ' + mx + ')',
+                colorClass: 'text-blue-600'
+            };
+        } else {
+            return {
+                status: 'NORMAL',
+                label: '🟢 Zona Normal (Optimal)',
+                colorClass: 'text-emerald-600'
+            };
+        }
+    }
+}">
 
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -289,15 +322,15 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Stok Awal <span class="text-rose-500">*</span></label>
-                        <input type="number" name="stok_aktual" value="0" min="0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
+                        <input type="number" name="stok_aktual" x-model.number="createForm.stok_aktual" min="0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Batas Minimum (Kritis) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="batas_minimum" value="20" min="0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
+                        <input type="number" name="batas_minimum" x-model.number="createForm.batas_minimum" min="0" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Batas Maksimum <span class="text-rose-500">*</span></label>
-                        <input type="number" name="batas_maksimum" value="100" min="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
+                        <input type="number" name="batas_maksimum" x-model.number="createForm.batas_maksimum" min="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Lead Time (Hari)</label>
@@ -315,6 +348,15 @@
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Harga Satuan (Rp)</label>
                         <input type="number" name="harga_beli_per_satuan" value="0" min="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400">
                     </div>
+                </div>
+
+                <!-- Realtime Buffer Status Preview -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <span class="text-slate-500 font-medium">Status Buffer RBL (Realtime): </span>
+                    <span class="font-bold"
+                          :class="evaluateStatus(createForm.stok_aktual, createForm.batas_minimum, createForm.batas_maksimum).colorClass"
+                          x-text="evaluateStatus(createForm.stok_aktual, createForm.batas_minimum, createForm.batas_maksimum).label">
+                    </span>
                 </div>
 
                 <div>
@@ -400,6 +442,15 @@
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Lokasi Rak</label>
                             <input type="text" name="lokasi_rak" x-model="editProduct.lokasi_rak" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
                         </div>
+                    </div>
+
+                    <!-- Realtime Buffer Status Preview -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                        <span class="text-slate-500 font-medium">Status Buffer RBL (Realtime): </span>
+                        <span class="font-bold"
+                              :class="evaluateStatus(editProduct.stok_aktual, editProduct.batas_minimum, editProduct.batas_maksimum).colorClass"
+                              x-text="evaluateStatus(editProduct.stok_aktual, editProduct.batas_minimum, editProduct.batas_maksimum).label">
+                        </span>
                     </div>
 
                     <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">

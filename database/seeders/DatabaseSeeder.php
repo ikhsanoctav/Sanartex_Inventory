@@ -19,6 +19,13 @@ class DatabaseSeeder extends Seeder
         // 1. Seed Demo Users for Every Role
         $users = [
             [
+                'name' => 'Ir. Bambang Soediro, M.M. (Direktur Operasional)',
+                'email' => 'direksi@sanartex.com',
+                'password' => Hash::make('password'),
+                'role' => 'manajemen',
+                'phone' => '0811-9988-7766',
+            ],
+            [
                 'name' => 'Budi Santoso (Superadmin)',
                 'email' => 'superadmin@sanartex.com',
                 'password' => Hash::make('password'),
@@ -254,12 +261,25 @@ class DatabaseSeeder extends Seeder
         foreach ($products as $p) {
             $createdProduct = Product::create($p);
 
-            // 4. Seed Inbound Transactions (Penerimaan Barang Jadi dari Pabrik/Vendor)
+            // 4. Seed Inbound Transactions (Penerimaan Barang Jadi & Nota Pembelian)
+            $hargaBeli = $p['harga_beli_per_satuan'] ?? 100000;
+            $inQty = rand(20, 50);
+            $subtotal = $inQty * $hargaBeli;
+            $isTempo = rand(0, 3) === 0;
+
             StockInTransaction::create([
+                'no_nota' => 'NOTA-' . now()->format('Ym') . '-' . str_pad(rand(10, 999), 4, '0', STR_PAD_LEFT),
                 'product_id' => $createdProduct->id,
                 'user_id' => $adminGudang->id ?? $superadmin->id,
-                'tanggal' => now()->subDays(rand(5, 20))->format('Y-m-d'),
-                'jumlah' => rand(20, 50),
+                'tanggal' => now()->subDays(rand(1, 20))->format('Y-m-d'),
+                'jumlah' => $inQty,
+                'harga_beli_satuan' => $hargaBeli,
+                'diskon' => 0,
+                'ppn_persen' => 0,
+                'total_harga' => $subtotal,
+                'status_pembayaran' => $isTempo ? 'TEMPO' : 'LUNAS',
+                'metode_pembayaran' => $isTempo ? 'Termin 30 Hari' : (rand(0, 1) ? 'Transfer Bank BCA' : 'Transfer Bank Mandiri'),
+                'jatuh_tempo' => $isTempo ? now()->addDays(rand(7, 30))->format('Y-m-d') : null,
                 'no_surat_jalan' => 'SJ-GRM-' . rand(1000, 9999),
                 'supplier' => $p['supplier_utama'],
                 'no_batch_lot' => 'BATCH-QC-' . rand(100, 999),
